@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>기술 스택 학습 로드맵 · 4~5시간 커리큘럼</title>
-<meta name="description" content="5단계 16개 기술, 기술별 4~5시간 학습 커리큘럼. 체크리스트로 진도가 자동 저장됩니다.">
+<meta name="description" content="6단계 17개 기술, 기술별 4~5시간 학습 커리큘럼. 1단계는 Python·LangChain 최우선. 체크리스트로 진도가 자동 저장됩니다.">
 <style>
   *,*::before,*::after{box-sizing:border-box}
   :root{
@@ -18,11 +18,12 @@
     --accent:#4f46e5;
     --accent-2:#7c6cf5;
     --ok:#16a34a;
-    --s1:#4f46e5;
-    --s2:#0d9488;
-    --s3:#d97706;
-    --s4:#db2777;
-    --s5:#475569;
+    --s1:#e11d48;
+    --s2:#4f46e5;
+    --s3:#0d9488;
+    --s4:#d97706;
+    --s5:#db2777;
+    --s6:#475569;
     --radius:16px;
     --shadow:0 1px 2px rgba(16,24,40,.04), 0 8px 24px -12px rgba(16,24,40,.14);
   }
@@ -162,6 +163,8 @@
   .techs{display:grid;gap:14px}
   .tech{padding:18px 20px 14px;border-radius:var(--radius);background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);scroll-margin-top:64px}
   .tech.complete{border-color:color-mix(in srgb,var(--ok) 32%,var(--line))}
+  .tech.hot{border-color:color-mix(in srgb,var(--c) 34%,var(--line));box-shadow:0 1px 2px rgba(16,24,40,.04),0 14px 30px -18px color-mix(in srgb,var(--c) 55%,transparent)}
+  .stage.hot .stage-head h2{color:var(--c)}
   .tech-top{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
   .tech-idx{
     flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;
@@ -176,6 +179,7 @@
     text-transform:none;
   }
   .tag.hrs{background:color-mix(in srgb,var(--c) 11%,#fff);color:var(--c)}
+  .tag.hot{background:#fee2e2;color:#be123c}
   .tech-sub{margin:5px 0 0;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
   .tech-prog{flex:0 0 116px;margin-left:auto;text-align:right}
   .tech-prog .pct{font-size:13px;font-weight:800;color:var(--c);font-variant-numeric:tabular-nums}
@@ -259,22 +263,23 @@
   <div class="wrap">
     <p class="eyebrow">Tech Study Roadmap</p>
     <h1>기술 스택 학습 로드맵</h1>
-    <p class="sub"><b>5단계 · 16개 기술</b>을 기술별 <b>4~5시간</b>씩 끊어 학습하는 커리큘럼 · 항목별 체크로 진도가 자동 저장됩니다.</p>
+    <p class="sub"><b>6단계 · 17개 기술</b>을 기술별 <b>4~5시간</b>씩 끊어 학습하는 커리큘럼 · <b>1단계 Python &amp; LangChain</b>부터 가장 먼저 · 항목별 체크로 진도가 자동 저장됩니다.</p>
 
     <div class="hero-stats">
       <div class="hero-panel">
         <div class="hero-num"><strong id="overallPct">0%</strong><span>전체 진도율</span></div>
         <div class="bar"><i id="overallBar"></i></div>
         <div class="hero-meta">
-          <span>완료 <b id="doneItems">0</b> / <b id="totalItems">48</b> 항목</span>
-          <span>완료 기술 <b id="doneTechs">0</b> / 16</span>
-          <span>남은 예상 <b id="remainHours">72</b>시간</span>
+          <span>완료 <b id="doneItems">0</b> / <b id="totalItems">54</b> 항목</span>
+          <span>완료 기술 <b id="doneTechs">0</b> / <b id="totalTechs">17</b></span>
+          <span>남은 예상 <b id="remainHours">77</b>시간</span>
         </div>
       </div>
       <div class="hero-panel">
         <div class="hero-meta" style="gap:4px 16px">
-          <span>총 예상 학습시간 <b>약 72시간</b></span>
-          <span>단계 <b>5</b>개</span>
+          <span>총 예상 학습시간 <b id="totalHoursText">약 77시간</b></span>
+          <span>단계 <b id="totalStages">6</b>개</span>
+          <span>최우선 <b>Python · LangChain</b></span>
         </div>
         <p class="hero-note">체크한 내용은 이 브라우저에 자동 저장(localStorage)됩니다. 기록을 지우려면 초기화하세요.</p>
         <button class="btn-reset" id="resetBtn" type="button">↺ 진도 초기화</button>
@@ -326,12 +331,48 @@
 (function(){
   "use strict";
 
-  var STORE_KEY = "tech-study-roadmap:v1";
+  var STORE_KEY = "tech-study-roadmap:v2";
+  var LEGACY_KEY = "tech-study-roadmap:v1";
 
   var STAGES = [
     {
-      id: "s1", no: 1, color: "var(--s1)",
-      title: "1단계. 개발 환경 & 형상관리",
+      id: "s1", no: 1, color: "var(--s1)", hot: true,
+      title: "1단계. 🔥 최우선 핵심 — Python & LangChain",
+      techs: [
+        {
+          id: "python", name: "Python", version: "3.11.9", hours: "4~5h", hMax: 5, hot: true,
+          lessons: [
+            { k: "yt", p: "유튜브", t: "파이썬 코딩 무료 강의 (기본편) — 6시간 뒤면 여러분도 개발자가 될 수 있어요", d: "나도코딩 · 6시간 01분, 자료형부터 클래스·예외 처리·모듈과 패키지까지 퀴즈와 함께 (한국어)", u: "https://www.youtube.com/watch?v=kWiCuklohdY" },
+            { k: "free", p: "무료 교재", t: "점프 투 파이썬 — 위키독스 무료 웹 교재", d: "박응용 · 자료형·제어문·클래스·예외 처리·표준 라이브러리·타입 어노테이션까지 목차 단위로 (한국어, 전 챕터 무료)", u: "https://wikidocs.net/book/1" },
+            { k: "free", p: "무료 교재", t: "비동기 입문 (asyncio) — 스쿨오브웹 모던 파이썬", d: "async/await, 이벤트 루프, asyncio.gather·TaskGroup, FastAPI와 섞는 법까지 한 편에 (한국어, 무료)", u: "https://schoolofweb.net/ko/books/modern-python/asyncio-intro/" }
+          ],
+          items: [
+            { hrs: "0.5h", label: "<code>venv</code> 가상환경 생성·활성화 · <code>pip install</code> · <code>requirements.txt</code> 버전 고정(<code>pip freeze</code>)" },
+            { hrs: "1h", label: "<code>.env</code>에 API 키 분리 · <code>python-dotenv</code> + <code>os.getenv</code> 로드 · <code>.gitignore</code> 처리" },
+            { hrs: "1h", label: "리스트/딕셔너리 컴프리헨션 · <code>json</code> 파싱(<code>loads</code>/<code>dumps</code>) · 파일 입출력 · <code>requests</code>/<code>httpx</code> 로 외부 API 호출" },
+            { hrs: "1h", label: "Type Hints(<code>list</code>, <code>dict</code>, <code>Optional</code>, <code>Union</code>) · 클래스 & Pydantic(<code>BaseModel</code>) 데이터 모델링" },
+            { hrs: "1~1.5h", label: "<code>async</code>/<code>await</code> 비동기 처리 · <code>try-except</code> 예외 처리 · <code>logging</code> 기초" }
+          ]
+        },
+        {
+          id: "langchain", name: "LangChain", version: "", hours: "4~5h", hMax: 5, hot: true,
+          lessons: [
+            { k: "free", p: "무료 교재", t: "&lt;랭체인LangChain 노트&gt; — LangChain 한국어 튜토리얼", d: "테디노트 · 위키독스 무료 전자책, LCEL·프롬프트·출력파서·메모리·RAG·에이전트까지 챕터별 코드 (한국어, 무료)", u: "https://wikidocs.net/book/14314" },
+            { k: "yt", p: "유튜브", t: "#langchain 의 #RAG 파이프라인 이해해보기 — 네이버 뉴스기사 기반 Q&A 챗봇 제작", d: "테디노트 · 로더 → 스플리터 → 임베딩 → 벡터스토어 → 리트리버 → Chain 순서를 한 편으로 (한국어)", u: "https://www.youtube.com/watch?v=1scMJH93v0M" },
+            { k: "yt", p: "유튜브", t: "랭체인으로 수익형 AI 웹서비스 만들기 with ChatGPT, LLaMA 2, RAG", d: "조코딩 · 랭체인 기초, LLM/Chat 모델 차이, PDF 챗봇(ChatPDF) 구현과 배포까지 (한국어, 무료 공개편)", u: "https://www.youtube.com/watch?v=EWKbZFqiCsE" }
+          ],
+          items: [
+            { hrs: "1.5h", label: "핵심 컴포넌트 & LCEL(<code>|</code> 파이프 체인) — <code>ChatOpenAI</code>, <code>PromptTemplate</code>/<code>ChatPromptTemplate</code>, <code>OutputParser</code>" },
+            { hrs: "1.5h", label: "RAG 기초 — Document Loader(PDF/텍스트) → Text Splitter(청킹) → Embedding → VectorStore(FAISS/Chroma) → Retriever 연결" },
+            { hrs: "1h", label: "대화 이력(Memory / <code>ChatMessageHistory</code>) · Structured Output(JSON 구조화 출력·Pydantic 파서)" },
+            { hrs: "1h", label: "Tool/Function Calling & Agent 맛보기 · FastAPI 엔드포인트로 LangChain 체인 서빙(<code>/invoke</code>, 스트리밍)" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "s2", no: 2, color: "var(--s2)",
+      title: "2단계. 개발 환경 & 형상관리",
       techs: [
         {
           id: "vscode", name: "Visual Studio Code", version: "", hours: "3~4h", hMax: 4,
@@ -360,20 +401,9 @@
       ]
     },
     {
-      id: "s2", no: 2, color: "var(--s2)",
-      title: "2단계. 백엔드 & API 명세",
+      id: "s3", no: 3, color: "var(--s3)",
+      title: "3단계. 백엔드 & API 명세",
       techs: [
-        {
-          id: "python", name: "Python", version: "3.11.9", hours: "4~5h", hMax: 5,
-          lessons: [
-            { k: "yt", p: "유튜브", t: "파이썬 코딩 무료 강의 (기본편) — 6시간 뒤면 여러분도 개발자가 될 수 있어요", d: "나도코딩 · 6시간 01분, 자료형부터 클래스·예외 처리·모듈과 패키지까지 퀴즈와 함께 (한국어)", u: "https://www.youtube.com/watch?v=kWiCuklohdY" }
-          ],
-          items: [
-            { hrs: "1h", label: "<code>venv</code> 가상환경 · <code>requirements.txt</code> 버전 고정" },
-            { hrs: "1.5h", label: "Type Hints(<code>list</code>, <code>dict</code>, <code>Optional</code>, <code>Union</code>) · Pydantic 모델링 감각" },
-            { hrs: "2h", label: "<code>async</code>/<code>await</code> 비동기 · 예외 처리(<code>try-except</code>) · 환경변수(<code>os.getenv</code>)" }
-          ]
-        },
         {
           id: "fastapi", name: "FastAPI + Uvicorn", version: "0.115.12", hours: "5h", hMax: 5,
           lessons: [
@@ -401,8 +431,8 @@
       ]
     },
     {
-      id: "s3", no: 3, color: "var(--s3)",
-      title: "3단계. 데이터베이스 & 스토리지",
+      id: "s4", no: 4, color: "var(--s4)",
+      title: "4단계. 데이터베이스 & 스토리지",
       techs: [
         {
           id: "dbeaver", name: "DBeaver & Azure Database for MySQL", version: "", hours: "4~5h", hMax: 5,
@@ -455,8 +485,8 @@
       ]
     },
     {
-      id: "s4", no: 4, color: "var(--s4)",
-      title: "4단계. 프론트엔드 & API 연동",
+      id: "s5", no: 5, color: "var(--s5)",
+      title: "5단계. 프론트엔드 & API 연동",
       techs: [
         {
           id: "ts", name: "TypeScript", version: "5.2.2", hours: "4~5h", hMax: 5,
@@ -497,8 +527,8 @@
       ]
     },
     {
-      id: "s5", no: 5, color: "var(--s5)",
-      title: "5단계. 컨테이너 · 배포 · 보안 · 로그",
+      id: "s6", no: 6, color: "var(--s6)",
+      title: "6단계. 컨테이너 · 배포 · 보안 · 로그",
       techs: [
         {
           id: "linux", name: "Linux 기반 컨테이너 이미지", version: "", hours: "4~5h", hMax: 5,
@@ -559,8 +589,31 @@
   function readState(){
     try {
       var raw = localStorage.getItem(STORE_KEY);
-      var obj = raw ? JSON.parse(raw) : {};
-      return (obj && typeof obj === "object" && !Array.isArray(obj)) ? obj : {};
+      if (raw !== null) {
+        var obj = JSON.parse(raw);
+        return (obj && typeof obj === "object" && !Array.isArray(obj)) ? obj : {};
+      }
+      /* v1 → v2 1회 이전: 항목 구성이 바뀐 Python만 제외하고 15개 기술의 체크는 그대로 승계 */
+      var legacy = localStorage.getItem(LEGACY_KEY);
+      if (legacy) {
+        var old = JSON.parse(legacy);
+        var migrated = {};
+        if (old && typeof old === "object" && !Array.isArray(old)) {
+          STAGES.forEach(function(st){
+            st.techs.forEach(function(t){
+              if (t.id === "python") return;
+              t.items.forEach(function(it, i){
+                if (old[t.id + "-" + i]) migrated[t.id + "-" + i] = true;
+              });
+            });
+          });
+        }
+        if (Object.keys(migrated).length) {
+          localStorage.setItem(STORE_KEY, JSON.stringify(migrated));
+          return migrated;
+        }
+      }
+      return {};
     } catch(e){ return {}; }
   }
   function writeState(){
@@ -604,7 +657,7 @@
   var navHTML = '<button class="chip" type="button" data-stage="all" aria-pressed="true">전체 <small id="navAll">0%</small></button>';
   STAGES.forEach(function(st){
     navHTML += '<button class="chip" type="button" data-stage="' + st.id + '" aria-pressed="false" style="--c:' + st.color + '">' +
-      '<span class="dot"></span>' + st.no + '단계 <small id="nav-' + st.id + '">0%</small></button>';
+      '<span class="dot"></span>' + (st.hot ? "🔥 " : "") + st.no + '단계 <small id="nav-' + st.id + '">0%</small></button>';
   });
   nav.innerHTML = navHTML;
 
@@ -616,7 +669,7 @@
       ovHTML += '<tr' + (ti === 0 ? ' class="stage-start"' : '') + '>' +
         '<td>' + (ti === 0 ? '<span class="t-stage" style="--c:' + st.color + '"><span class="dot"></span>' + st.no + '단계</span>' : '') + '</td>' +
         '<td class="t-cnt">' + t.no + '</td>' +
-        '<td class="t-name"><a href="#tech-' + t.id + '">' + t.name + '</a></td>' +
+        '<td class="t-name"><a href="#tech-' + t.id + '">' + (t.hot ? '🔥 ' : '') + t.name + '</a></td>' +
         '<td class="t-ver">' + (t.version || "—") + '</td>' +
         '<td class="t-hours">' + t.hours + '</td>' +
         '<td class="t-cnt">' + t.items.length + '개</td>' +
@@ -630,7 +683,7 @@
   var stagesEl = document.getElementById("stages");
   var html = "";
   STAGES.forEach(function(st){
-    html += '<section class="stage" id="' + st.id + '" data-stage="' + st.id + '" style="--c:' + st.color + '">';
+    html += '<section class="stage' + (st.hot ? ' hot' : '') + '" id="' + st.id + '" data-stage="' + st.id + '" style="--c:' + st.color + '">';
     html += '<div class="stage-head">' +
       '<span class="stage-badge">' + st.no + '</span>' +
       '<h2>' + st.title + '</h2>' +
@@ -638,12 +691,13 @@
       '<span class="stage-pct" data-stagepct="' + st.id + '">0%</span></div></div>';
     html += '<div class="techs">';
     st.techs.forEach(function(t){
-      html += '<article class="tech" id="tech-' + t.id + '" data-techcard="' + t.id + '" style="--c:' + st.color + '">';
+      html += '<article class="tech' + (t.hot ? ' hot' : '') + '" id="tech-' + t.id + '" data-techcard="' + t.id + '" style="--c:' + st.color + '">';
       html += '<div class="tech-top">' +
         '<span class="tech-idx">' + t.no + '</span>' +
         '<div class="tech-title"><h3>' + t.name +
           (t.version ? ' <span class="tag">v' + t.version + '</span>' : '') +
-          ' <span class="tag hrs">' + t.hours + '</span></h3>' +
+          ' <span class="tag hrs">' + t.hours + '</span>' +
+          (t.hot ? ' <span class="tag hot">🔥 최우선</span>' : '') + '</h3>' +
           '<p class="tech-sub">학습 항목 ' + t.items.length + '개 · 체크하면 진도가 저장됩니다</p></div>' +
         '<div class="tech-prog"><span class="pct" data-techpct="' + t.id + '">0%</span>' +
         '<span class="cnt" data-techcnt="' + t.id + '">0 / ' + t.items.length + '</span>' +
@@ -683,6 +737,9 @@
   var doneTechsEl = document.getElementById("doneTechs");
   var remainEl = document.getElementById("remainHours");
   totalItemsEl.textContent = ALL_ITEMS.length;
+  document.getElementById("totalTechs").textContent = TOTAL_TECHS;
+  document.getElementById("totalStages").textContent = STAGES.length;
+  document.getElementById("totalHoursText").textContent = "약 " + TOTAL_HOURS + "시간";
 
   function pct(done, total){ return total ? Math.round(done / total * 100) : 0; }
 
@@ -763,7 +820,7 @@
   document.getElementById("resetBtn").addEventListener("click", function(){
     if (!window.confirm("체크한 학습 진도를 모두 지울까요? 되돌릴 수 없습니다.")) return;
     state = {};
-    try { localStorage.removeItem(STORE_KEY); } catch(e){}
+    try { localStorage.removeItem(STORE_KEY); localStorage.removeItem(LEGACY_KEY); } catch(e){}
     Array.prototype.forEach.call(document.querySelectorAll('input[data-key]'), function(cb){ cb.checked = false; });
     update();
   });
